@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.4"
+    }
   }
 }
 
@@ -19,8 +23,6 @@ module "data_lake" {
   project_name = var.project_name
   environment  = var.environment
 }
-
-#Call module of the lambda-ingestion here
 
 module "lambda_ingestion" {
   source             = "../../modules/lambda-ingestion"

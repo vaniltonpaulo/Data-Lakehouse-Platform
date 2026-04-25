@@ -1,7 +1,3 @@
-#AWS Lambda cannot access S3 automatically.It needs help
-#This Lambda can write to Bronze bucket.
-#Applying some least privilege.
-
 resource "aws_iam_role" "lambda_exec" {
   name = "${var.project_name}-lambda-role-${var.environment}"
 
@@ -17,6 +13,33 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.root}/../../../glue_scripts/ingestion/handler.py"
+  output_path = "${path.module}/lambda_ingestion.zip"
+}
+
+resource "aws_lambda_function" "ingestion" {
+  function_name = "${var.project_name}-ingestion-${var.environment}"
+  role          = aws_iam_role.lambda_exec.arn
+  handler       = "handler.lambda_handler"
+  runtime       = "python3.11"
+
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+
+  timeout     = 60
+  memory_size = 256
+
+  environment {
+    variables = {
+      BRONZE_BUCKET = var.bronze_bucket_name
+    }
+  }
+}
+
+
 resource "aws_iam_role_policy" "lambda_s3_policy" {
   name = "${var.project_name}-lambda-s3-policy"
   role = aws_iam_role.lambda_exec.id
@@ -25,10 +48,8 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject"
-        ]
+        Effect   = "Allow"
+        Action   = ["s3:PutObject"]
         Resource = "arn:aws:s3:::${var.bronze_bucket_name}/*"
       },
       {
