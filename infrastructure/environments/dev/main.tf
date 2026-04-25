@@ -19,3 +19,12 @@ module "data_lake" {
   project_name = var.project_name
   environment  = var.environment
 }
+
+#Call module of the lambda-ingestion here
+
+module "lambda_ingestion" {
+  source             = "../../modules/lambda-ingestion"
+  project_name       = var.project_name
+  environment        = var.environment
+  bronze_bucket_name = module.data_lake.bronze_bucket_name
+}
