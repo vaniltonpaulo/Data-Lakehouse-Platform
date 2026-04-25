@@ -37,6 +37,10 @@ resource "aws_lambda_function" "ingestion" {
       BRONZE_BUCKET = var.bronze_bucket_name
     }
   }
+
+  dead_letter_config {
+  target_arn = aws_sqs_queue.dlq.arn
+}
 }
 
 
@@ -60,7 +64,12 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "*"
-      }
+      },
+      {
+  Effect   = "Allow"
+  Action   = ["sqs:SendMessage"]
+  Resource = aws_sqs_queue.dlq.arn
+}
     ]
   })
 }
@@ -85,4 +94,10 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   function_name = aws_lambda_function.ingestion.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.daily_trigger.arn
+}
+
+
+resource "aws_sqs_queue" "dlq" {
+  name                      = "${var.project_name}-ingestion-dlq-${var.environment}"
+  message_retention_seconds = 1209600
 }
