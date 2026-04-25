@@ -12,3 +12,10 @@ terraform {
 provider "aws" {
   region = var.aws_region
 }
+
+
+module "data_lake" {
+  source       = "../../modules/s3-data-lake"
+  project_name = var.project_name
+  environment  = var.environment
+}
