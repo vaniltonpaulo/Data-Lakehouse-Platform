@@ -1,3 +1,5 @@
+#Terraform docs life saver
+
 resource "aws_s3_bucket" "bronze" {
   bucket = "${var.project_name}-bronze-${var.environment}"
 }
@@ -61,5 +63,37 @@ resource "aws_s3_bucket_lifecycle_configuration" "bronze" {
       days          = 90
       storage_class = "GLACIER"
     }
+  }
+}
+
+
+
+
+
+#Add versioning to all S3 buckets.
+#Just in case  if data is accidentally overwritten or deleted.
+
+
+resource "aws_s3_bucket_versioning" "bronze" {
+  bucket = aws_s3_bucket.bronze.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "silver" {
+  bucket = aws_s3_bucket.silver.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "gold" {
+  bucket = aws_s3_bucket.gold.id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
