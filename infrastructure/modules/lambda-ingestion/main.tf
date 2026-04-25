@@ -64,3 +64,25 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
     ]
   })
 }
+
+
+#EventBridge will run: Every day at 06:00 AM and invoke  Lambda.
+
+resource "aws_cloudwatch_event_rule" "daily_trigger" {
+  name                = "${var.project_name}-daily-ingestion-${var.environment}"
+  description         = "Trigger ingestion Lambda daily"
+  schedule_expression = "cron(0 6 * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "lambda_target" {
+  rule = aws_cloudwatch_event_rule.daily_trigger.name
+  arn  = aws_lambda_function.ingestion.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.ingestion.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_trigger.arn
+}
