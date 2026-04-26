@@ -41,3 +41,13 @@ module "glue_job" {
   silver_bucket_name  = module.data_lake.silver_bucket_name
   scripts_bucket_name = module.data_lake.bronze_bucket_name
 }
+
+
+# we will work on this later 
+#redshift is a bit price
+
+#module "redshift_serverless" {
+# source       = "../../modules/redshift-serverless"
+# project_name = var.project_name
+#  environment  = var.environment
+#}

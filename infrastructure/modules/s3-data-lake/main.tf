@@ -97,3 +97,18 @@ resource "aws_s3_bucket_versioning" "gold" {
     status = "Enabled"
   }
 }
+
+
+
+resource "aws_s3_bucket" "athena_results" {
+  bucket = "${var.project_name}-athena-results-${var.environment}"
+}
+
+resource "aws_s3_bucket_public_access_block" "athena_results" {
+  bucket = aws_s3_bucket.athena_results.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
