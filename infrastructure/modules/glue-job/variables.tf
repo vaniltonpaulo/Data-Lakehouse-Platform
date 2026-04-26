@@ -13,3 +13,8 @@ variable "bronze_bucket_name" {
 variable "silver_bucket_name" {
   type = string
 }
+
+
+variable "scripts_bucket_name" {
+  type = string
+}

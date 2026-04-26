@@ -32,10 +32,12 @@ module "lambda_ingestion" {
 }
 
 
+
 module "glue_job" {
-  source             = "../../modules/glue-job"
-  project_name       = var.project_name
-  environment        = var.environment
-  bronze_bucket_name = module.data_lake.bronze_bucket_name
-  silver_bucket_name = module.data_lake.silver_bucket_name
+  source              = "../../modules/glue-job"
+  project_name        = var.project_name
+  environment         = var.environment
+  bronze_bucket_name  = module.data_lake.bronze_bucket_name
+  silver_bucket_name  = module.data_lake.silver_bucket_name
+  scripts_bucket_name = module.data_lake.bronze_bucket_name
 }

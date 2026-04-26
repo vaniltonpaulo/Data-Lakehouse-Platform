@@ -44,3 +44,33 @@ resource "aws_iam_role_policy" "glue_s3_policy" {
     ]
   })
 }
+
+
+
+resource "aws_s3_object" "bronze_to_silver_script" {
+  bucket = var.scripts_bucket_name
+  key    = "glue/bronze_to_silver.py"
+  source = "${path.root}/../../../glue_scripts/bronze_to_silver.py"
+  etag   = filemd5("${path.root}/../../../glue_scripts/bronze_to_silver.py")
+}
+
+resource "aws_glue_job" "bronze_to_silver" {
+  name         = "${var.project_name}-bronze-to-silver-${var.environment}"
+  role_arn     = aws_iam_role.glue_role.arn
+  glue_version = "4.0"
+
+  number_of_workers = 2
+  worker_type       = "G.1X"
+
+  command {
+    name            = "glueetl"
+    script_location = "s3://${var.scripts_bucket_name}/${aws_s3_object.bronze_to_silver_script.key}"
+    python_version  = "3"
+  }
+
+  default_arguments = {
+    "--bronze_bucket"       = var.bronze_bucket_name
+    "--silver_bucket"       = var.silver_bucket_name
+    "--job-bookmark-option" = "job-bookmark-enable"
+  }
+}
