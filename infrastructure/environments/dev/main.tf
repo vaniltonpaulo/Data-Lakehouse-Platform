@@ -51,3 +51,12 @@ module "glue_job" {
 # project_name = var.project_name
 #  environment  = var.environment
 #}
+
+
+
+module "athena" {
+  source                     = "../../modules/athena"
+  project_name               = var.project_name
+  environment                = var.environment
+  athena_results_bucket_name = module.data_lake.athena_results_bucket_name
+}
