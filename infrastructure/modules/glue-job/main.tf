@@ -74,3 +74,19 @@ resource "aws_glue_job" "bronze_to_silver" {
     "--job-bookmark-option" = "job-bookmark-enable"
   }
 }
+
+
+
+resource "aws_glue_catalog_database" "silver" {
+  name = "${var.project_name}_silver_${var.environment}"
+}
+
+resource "aws_glue_crawler" "silver" {
+  name          = "${var.project_name}-silver-crawler-${var.environment}"
+  role          = aws_iam_role.glue_role.arn
+  database_name = aws_glue_catalog_database.silver.name
+
+  s3_target {
+    path = "s3://${var.silver_bucket_name}/"
+  }
+}
