@@ -34,8 +34,10 @@ resource "aws_iam_role_policy" "glue_s3_policy" {
         ]
       },
       {
+            #Grants Glue read/write access to Silver bucket objects and ability to list bucket contents.
+            # Required for ETL output writes, crawler schema discovery, updates, and cleanup operations.
         Effect = "Allow"
-        Action = ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
+        Action = ["s3:GetObject","s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
         Resource = [
           "arn:aws:s3:::${var.silver_bucket_name}",
           "arn:aws:s3:::${var.silver_bucket_name}/*"
@@ -87,6 +89,7 @@ resource "aws_glue_crawler" "silver" {
   database_name = aws_glue_catalog_database.silver.name
 
   s3_target {
-    path = "s3://${var.silver_bucket_name}/"
+    # This also important to specify
+    path = "s3://${var.silver_bucket_name}/nyc-taxi/"
   }
 }

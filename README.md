@@ -53,11 +53,13 @@ The function:
 - Writes JSON data into Bronze bucket
 
 Log message: Need to take a break. come back after a 1 hour or so
+
+log message: 
+Pipeline so far
+Lambda → Bronze S3 → Glue Job → Silver S3 → Glue Catalog → Athena
 ### To do still
 
-- EventBridge scheduler for automated ingestion
-- SQS dead-letter queue
-- AWS Glue ETL jobs
+
 - Redshift Serverless
 - dbt transformations
 - Monitoring / alerts
