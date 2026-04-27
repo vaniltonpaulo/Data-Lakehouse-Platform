@@ -70,3 +70,13 @@ module "step_functions" {
   glue_job_name = module.glue_job.bronze_to_silver_job_name
   crawler_name  = module.glue_job.silver_crawler_name
 }
+
+
+module "observability" {
+  source            = "../../modules/observability"
+  project_name      = var.project_name
+  environment       = var.environment
+  state_machine_arn = module.step_functions.state_machine_arn
+  alert_email       = var.alert_email
+}
+

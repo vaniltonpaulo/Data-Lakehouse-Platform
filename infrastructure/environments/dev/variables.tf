@@ -15,3 +15,11 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+
+
+variable "alert_email" {
+  type = string
+  ## Here just input a email in case of step function failure
+  default = "your-email@example.com"
+}
