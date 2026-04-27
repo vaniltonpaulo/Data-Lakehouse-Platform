@@ -1,5 +1,6 @@
 import json
 import os
+import urllib.request
 from datetime import datetime
 
 import boto3
@@ -9,24 +10,23 @@ def lambda_handler(event, context):
     s3 = boto3.client("s3")
     bucket = os.environ["BRONZE_BUCKET"]
 
+    url = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet"
+
     now = datetime.utcnow()
     key = (
-        f"source=test-ingestion/"
+        f"source=nyc-taxi/"
         f"year={now.year}/month={now.month:02d}/day={now.day:02d}/"
-        f"sample.json"
+        f"yellow_tripdata_2024-01.parquet"
     )
 
-    body = {
-        "message": "hello from lambda",
-        "created_at": now.isoformat(),
-        "event": event,
-    }
+    with urllib.request.urlopen(url) as response:
+        data = response.read()
 
     s3.put_object(
         Bucket=bucket,
         Key=key,
-        Body=json.dumps(body),
-        ContentType="application/json",
+        Body=data,
+        ContentType="application/octet-stream",
     )
 
     return {
