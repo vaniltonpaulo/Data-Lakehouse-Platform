@@ -60,3 +60,13 @@ module "athena" {
   environment                = var.environment
   athena_results_bucket_name = module.data_lake.athena_results_bucket_name
 }
+
+
+module "step_functions" {
+  source        = "../../modules/step-functions"
+  project_name  = var.project_name
+  environment   = var.environment
+  lambda_arn    = module.lambda_ingestion.lambda_function_arn
+  glue_job_name = module.glue_job.bronze_to_silver_job_name
+  crawler_name  = module.glue_job.silver_crawler_name
+}
