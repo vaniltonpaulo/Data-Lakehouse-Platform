@@ -57,10 +57,17 @@ Log message: Need to take a break. come back after a 1 hour or so
 log message: 
 Pipeline so far
 Lambda → Bronze S3 → Glue Job → Silver S3 → Glue Catalog → Athena
-### To do still
+
+Added some CI/CD pipeline 
+(have to remove the dbt though)
 
 
-- Redshift Serverless
-- dbt transformations
-- Monitoring / alerts
-- GitHub Actions CI/CD
+
+
+## Destroy Infrastructure
+
+to take everything down
+
+```bash
+cd infrastructure/environments/dev
+terraform destroy
